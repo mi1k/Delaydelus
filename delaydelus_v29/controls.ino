@@ -222,6 +222,7 @@ void pots(){
         if(left_en[i-8]==0){
           pitch_map[i]=pitch_pot;
         }
+       }
       }
     }
 

@@ -423,12 +423,6 @@ if (pad>7){
 
       }
 
-
-
-
-    
-
-
   }
 }
   return out[pad];
