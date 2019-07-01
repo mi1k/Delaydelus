@@ -77,7 +77,7 @@ byte res_tick;
 
 #define NUM_SAMPS 28000 // The audio sample rate is 29.4Khz so this gies us jsut under a second and uses up just abotu all the available ram
 
-volatile int16_t dly_buffer[NUM_SAMPS];
+//volatile int16_t dly_buffer[NUM_SAMPS];
 
 
 
@@ -94,9 +94,6 @@ int fbb[4]={
 int fbc;
 
 //delay
-long write_head, read_head;
-int lerp_dly;
-int filter, feedback,fb_tmp_inv,fb_tmp;
 
 int master_env,pad_rst_c;
 byte p_mode;
@@ -160,7 +157,7 @@ byte play=0;
 byte erased=0;
 byte playthrough=0;
 int ainf;
-int sample_out,dly_out;
+int sample_out;
 
 uint16_t pmaybe;
 uint32_t dds_res,tune;
@@ -263,7 +260,9 @@ int rev;
 byte pot_tick;
 volatile int16_t voice_bank[4]={
   100,100,100,100};
-int fh_post_mod,fh_dly_out;
+int pitch_map[17]={
+  170,170,170,170,170,170,170,170,170,170,170,170,170,170,170,170,170};   
+int fh_post_mod;
 long sc,prev5,full_cnt,psc;
 byte pr,rt;
 byte blink1,load_done;
@@ -395,7 +394,7 @@ void setup() {
   mraw=analogRead(middle_pot_pin);
   uint16_t log3=pow(mraw,2);
   mp_smooth=log3>>8;
-  lerp_dly=map(mp_smooth,0,255,NUM_SAMPS-4,16);
+  //lerp_dly=map(mp_smooth,0,255,NUM_SAMPS-4,16);
         
   pinMode(right_pot_pin, INPUT);
 
@@ -904,6 +903,3 @@ void E_pad(unsigned long pad){
   Serial.println(" erased????");
 
 }
-
-
-

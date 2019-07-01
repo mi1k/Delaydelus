@@ -9,39 +9,6 @@ void hi(){
   }
 
 
-//linear interpolation for delay time
-  lerp_tick++;
-
-if (tap_rate==0 || tap_rate>NUM_SAMPS-10){
-  if(lerp_tick>1){
-    byte dly_step=1;
-    if(lerp_dly <= middle_pot-4){   
-      lerp_dly +=dly_step;
-    }
-    if(lerp_dly >= middle_pot+4){
-      lerp_dly -= dly_step;
-    }
-
-    lerp_tick=0;
-  }
-}
-
-if (tap_rate>0 && tap_rate<NUM_SAMPS-10){
-  if(lerp_tick>1){
-    byte dly_step=1;
-    if(lerp_dly <= tap_rate-4){   
-      lerp_dly +=dly_step;
-    }
-    if(lerp_dly >= tap_rate+4){
-      lerp_dly -= dly_step;
-    }
-
-    lerp_tick=0;
-  }
-}
-
-
-
   if (master_mode==0) 
   {
     thru_mode=0;
@@ -179,7 +146,7 @@ if (tap_rate>0 && tap_rate<NUM_SAMPS-10){
     }
   
     if (midi_pitch_en==0){
-    spitch=pitch_pot;
+    //spitch=pitch_pot;
     }
     
     if (midi_pitch_en==1){
@@ -187,10 +154,10 @@ if (tap_rate>0 && tap_rate<NUM_SAMPS-10){
     }
     
     // sample_t=micros();
-    sample(0,voice_bank[0],spitch,read_buf[0]);
-    sample(1,voice_bank[1],spitch,read_buf[1]);
-    sample(2,voice_bank[2],spitch,read_buf[2]);
-    sample(3,voice_bank[3],spitch,read_buf[3]);
+    sample(0,voice_bank[0],pitch_map,read_buf[0]);
+    sample(1,voice_bank[1],pitch_map,read_buf[1]);
+    sample(2,voice_bank[2],pitch_map,read_buf[2]);
+    sample(3,voice_bank[3],pitch_map,read_buf[3]);
 
     comb_temp=0;
 
@@ -205,11 +172,12 @@ if (tap_rate>0 && tap_rate<NUM_SAMPS-10){
 
   post_mod_f=hard_limit(post_mod);
 
-  dly_out=vdelay(post_mod_f, lerp_dly ,right_pot);
+  //dly_out=vdelay(post_mod_f, lerp_dly ,right_pot);
   
 //  testj+=8;
 // testj%=4000;
-  analogWrite(A14,dly_out+2048);
+  //analogWrite(A14,dly_out+2048);
+  analogWrite(A14,post_mod_f+2048);
 
 
 //  dds_t=micros()-dds_d;
@@ -223,58 +191,7 @@ if (tap_rate>0 && tap_rate<NUM_SAMPS-10){
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-
-int vdelay(int input, uint16_t length, uint16_t fb_amt){
-  int fb_amt_2=(fb_amt*294)>>8;
-  int fb_inv=(fb_amt-255)*-1;
-
-
-  write_head++;
-
-  if (write_head > (NUM_SAMPS-1)){
-    write_head=0;
-  }
-
-
-  read_head = ((write_head) + length);
-
-  if (read_head > (NUM_SAMPS-1)){
-    read_head-=(NUM_SAMPS-1);
-  }
-
-
-  filter2=(feedback+filter2)>>1;
-
-  to_dly_temp= (((input*fb_inv)>>8) + ((filter2*fb_amt_2)>>8));
-
-  //fold
-  if(to_dly_temp<-4000){   
-    int fold_amt=(to_dly_temp+4000)<<1;
-    to_dly_temp-=fold_amt;
-  } 
-  if(to_dly_temp>4000){
-    int fold_amt=(to_dly_temp-4000)<<1;
-    to_dly_temp-=fold_amt;
-  } 
-
-
-  dly_buffer[write_head] =to_dly_temp;
-
-  int read_head1 =dly_buffer[read_head];
-
-  feedback = (input + read_head1); //
-
-  int out_temp = (feedback);  
-
-  if (fb_amt<8){
-    out_temp=input;
-  }
-  return (out_temp);
-
-}
-
-
-
+//removed delay
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -361,9 +278,10 @@ poff=offset;
 
 
 
-int16_t sample(byte place, byte pad, uint16_t pitch, int16_t* array){
+int16_t sample(byte place, byte pad, int pitch_map[], int16_t* array){
   uint32_t offset;
-  
+  uint16_t pitch=pitch_map[pad];
+    
 if (pad<=7){
   //byte rev=1;
   offset=(pad*pad_len);
@@ -518,28 +436,8 @@ if (pad>7){
 
 byte vbt(){
 
-  byte total=voice_bank[0]+voice_bank[1]+voice_bank[2]+voice_bank[3]+voice_bank[4]+voice_bank[5]+voice_bank[6]+voice_bank[7];
+  byte total=voice_bank[0]+voice_bank[1]+voice_bank[2]+voice_bank[3];
 
   return total;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

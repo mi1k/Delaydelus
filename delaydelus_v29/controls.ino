@@ -193,22 +193,35 @@ void pots(){
         uint16_t sm12 = digitalSmooth(analogRead(left_pot_pin),smootha0);
         left_pot=(digitalSmooth(sm12,smootha0)-255)*-1;
 
-        if (left_pot>64&&left_pot<128){
-          rev=0;
-          pitch_pot=map(left_pot,64,128,20,normal_playback_rate);
-        }
-
-        if (left_pot>=128){
+        if (left_pot>=138){
           rev=0;
           pitch_pot=map(left_pot,128,255,normal_playback_rate,pitch_max);
         }
 
-        if (left_pot<=64){
-          rev=1;
-          pitch_pot=map(left_pot,0,64,pitch_max,40);
-
+        if (left_pot>118&&left_pot<138){
+          rev=0;
+          pitch_pot=map(left_pot,118,138,normal_playback_rate,normal_playback_rate);
         }
 
+        if (left_pot<=118){
+          rev=0;
+          pitch_pot=map(left_pot,0,128,40,normal_playback_rate);
+        }
+
+//        if (left_pot<=64){
+//          rev=1;
+//          pitch_pot=map(left_pot,0,64,pitch_max,40);
+//        }
+       for(int i=0;i<8;i++){
+        if(left_en[i]==0){
+          pitch_map[i]=pitch_pot;
+        }
+       }
+       //user recorded
+       for(int i=8;i<17;i++){
+        if(left_en[i-8]==0){
+          pitch_map[i]=pitch_pot;
+        }
       }
     }
 
@@ -679,7 +692,3 @@ void poly_clear(){
     voice_bank[i]=0;
   }
 }
-
-
-
-
