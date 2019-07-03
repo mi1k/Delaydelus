@@ -143,7 +143,7 @@ void pots(){
   }
 
   if (sample_step==3){
-    right_pot=0; //turn delay off
+   // right_pot=0; //turn delay off
 
     if (pot_tick==6){
       uint16_t sm12 = digitalSmooth(analogRead(left_pot_pin),smootha0);
@@ -158,10 +158,10 @@ void pots(){
     if (pot_tick==0){
       if (midi_dly_en==0){
 
-        //uint16_t sm10=digitalSmooth(analogRead(right_pot_pin)>>2, smootha1);
+        //uint16_t sm10=digitalSmooth(analogRead(right_pot_pin), smootha1);
         uint16_t sm10=analogRead(right_pot_pin);
         right_pot=(sm10-255)*-1;
-        //right_pot=analogRead(A6);
+        //right_pot=(digitalSmooth(sm10,smootha1)-255)*-1;
       }
       if (midi_dly_en==1){
         right_pot=(midi_dly_fb-127)*-2;
@@ -176,12 +176,13 @@ void pots(){
         uint16_t sm3=digitalSmooth(rcmraw, smootha2);
         uint16_t log3=pow(sm3,2);
         mp_smooth=log3>>8;
-        middle_pot=map(mp_smooth,0,255,NUM_SAMPS-4,16);
+        middle_pot=map(mp_smooth,0,255,0,255);
 
       }
 
       if (midi_dly_en==1){
-        middle_pot=map(midi_dly_len,0,127,NUM_SAMPS-4,0);
+        //middle_pot=map(midi_dly_len,0,127,NUM_SAMPS-4,0);
+        middle_pot=map(mp_smooth,0,255,0,255);
       }      
     }
 

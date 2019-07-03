@@ -313,7 +313,7 @@ if (pad>7){
 
         amp[pad]=1;
         acc[pad]+=pitch;  
-        dx[pad]=(acc[pad] >> 7); 
+        dx[pad]=(acc[pad] >> 7) + map(middle_pot,0,255,s_len[pad],0); // map to size of sample
 
         if ((dx[pad]>s_len[pad]-32)){
 
@@ -344,7 +344,7 @@ if (pad>7){
 
         }
 
-        byte windex=dx[pad]-s_loc[pad];
+        byte windex=dx[pad]-s_loc[pad]; 
         if (windex<=ab_len){
           out[pad]=(array[windex]);
 
